@@ -29,3 +29,41 @@ public extension View {
         self.modifier(VoiceControl(voiceControllable: voiceControllable))
     }
 }
+class HomeViewButton: VoiceControllable {
+    var voiceCommands: [String] {
+        ["home"]
+    }
+    let action: () -> Void
+    
+    init(action: @escaping () -> Void) {
+        self.action = action
+    }
+    func performAction(forVoiceCommand command: String) {
+        print("Voice command activated: \(command)")
+        action()
+    }
+}
+
+struct CustomAccessibilityLabelModifier: ViewModifier {
+    let label: Text
+    let voice = HomeViewButton {
+        print("TRIGGERED")
+    }
+    func body(content: Content) -> some View {
+        content
+            .voiceControl(voice)
+            // Add any other custom attributes or modifiers here
+    }
+}
+public extension View {
+    func accessibilityLabel(_ label: Text) -> some View {
+        self.modifier(CustomAccessibilityLabelModifier(label: label))
+    }
+}
+
+extension View {
+    func customAccessibilityLabel(_ label: String) -> some View {
+        self.modifier(CustomAccessibilityLabelModifier(label: Text(label)))
+    }
+}
+
